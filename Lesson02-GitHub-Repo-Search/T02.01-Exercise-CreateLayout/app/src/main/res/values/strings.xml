@@ -15,4 +15,7 @@
   -->
 <resources>
     <string name="app_name">Github Query</string>
+    <string name="eStrSearchQuery">Enter a query and then tap search</string>
+    <string name="eStrResultsLabel">Enter a search query and your URL will show here</string>
+    <string name="eStrResultsContent">Tap the enter button to see results</string>
 </resources>
