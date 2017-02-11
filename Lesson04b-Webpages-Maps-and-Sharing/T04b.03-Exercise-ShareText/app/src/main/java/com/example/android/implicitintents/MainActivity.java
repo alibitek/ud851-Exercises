@@ -15,6 +15,7 @@
  */
 package com.example.android.implicitintents;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -84,10 +85,15 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void createYourOwn(View v) {
-        Toast.makeText(this,
-                "TODO: Create Your Own Implicit Intent",
-                Toast.LENGTH_SHORT)
-                .show();
+        webSearch("Samsung Galaxy S8");
+    }
+
+    private void webSearch(String query) {
+        Intent intent = new Intent(Intent.ACTION_SEARCH);
+        intent.putExtra(SearchManager.QUERY, query);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     /**
