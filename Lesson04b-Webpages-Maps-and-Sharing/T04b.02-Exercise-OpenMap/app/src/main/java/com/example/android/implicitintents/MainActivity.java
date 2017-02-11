@@ -52,12 +52,7 @@ public class MainActivity extends AppCompatActivity {
         String addressString = "1600 Amphitheatre Parkway, CA";
 
         // COMPLETED (6) Use Uri.Builder with the appropriate scheme and query to form the Uri for the address
-        Uri uri = new Uri.Builder()
-                .scheme("geo")
-                .path("0,0")
-                .query(addressString)
-//                .appendQueryParameter("z", String.valueOf(10))
-                .build();
+        Uri uri = Uri.parse("geo:0,0?q=" + Uri.encode(addressString) + "&z=11");
 
         // COMPLETED (7) Replace the Toast with a call to showMap, passing in the Uri from the previous step
         showMap(uri);
