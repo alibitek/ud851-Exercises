@@ -21,6 +21,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements
      * to any number you like, as long as you use the same variable name.
      */
     private static final int GITHUB_SEARCH_LOADER = 22;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private EditText mSearchBoxEditText;
 
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements
         /*
          * Initialize the loader
          */
+        Log.d(TAG, "onCreate - initLoader");
         getSupportLoaderManager().initLoader(GITHUB_SEARCH_LOADER, null, this);
     }
 
@@ -127,8 +130,10 @@ public class MainActivity extends AppCompatActivity implements
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<String> githubSearchLoader = loaderManager.getLoader(GITHUB_SEARCH_LOADER);
         if (githubSearchLoader == null) {
+            Log.d(TAG, "makeGithubSearchQuery - initLoader");
             loaderManager.initLoader(GITHUB_SEARCH_LOADER, queryBundle, this);
         } else {
+            Log.d(TAG, "makeGithubSearchQuery - restartLoader");
             loaderManager.restartLoader(GITHUB_SEARCH_LOADER, queryBundle, this);
         }
     }
@@ -165,13 +170,14 @@ public class MainActivity extends AppCompatActivity implements
     public Loader<String> onCreateLoader(int id, final Bundle args) {
         return new AsyncTaskLoader<String>(this) {
 
-            // TODO (1) Create a String member variable called mGithubJson that will store the raw JSON
+            // DONE (1) Create a String member variable called mGithubJson that will store the raw JSON
+            private String mGithubJson;
 
             @Override
             protected void onStartLoading() {
-
                 /* If no arguments were passed, we don't have a query to perform. Simply return. */
                 if (args == null) {
+                    Log.d(TAG, "onStartLoading - no args");
                     return;
                 }
 
@@ -181,12 +187,20 @@ public class MainActivity extends AppCompatActivity implements
                  */
                 mLoadingIndicator.setVisibility(View.VISIBLE);
 
-                // TODO (2) If mGithubJson is not null, deliver that result. Otherwise, force a load
-                forceLoad();
+                // DONE (2) If mGithubJson is not null, deliver that result. Otherwise, force a load
+                if (TextUtils.isEmpty(mGithubJson)) {
+                    Log.d(TAG, "onStartLoading - no cache");
+                    forceLoad();
+                }
+                else {
+                    Log.d(TAG, "onStartLoading - cache");
+                    deliverResult(mGithubJson);
+                }
             }
 
             @Override
             public String loadInBackground() {
+                Log.d(TAG, "loadInBackground");
 
                 /* Extract the search query from the args using our constant */
                 String searchQueryUrlString = args.getString(SEARCH_QUERY_URL_EXTRA);
@@ -199,21 +213,28 @@ public class MainActivity extends AppCompatActivity implements
                 /* Parse the URL from the passed in String and perform the search */
                 try {
                     URL githubUrl = new URL(searchQueryUrlString);
-                    String githubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubUrl);
-                    return githubSearchResults;
+                    return NetworkUtils.getResponseFromHttpUrl(githubUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;
                 }
             }
 
-            // TODO (3) Override deliverResult and store the data in mGithubJson
-            // TODO (4) Call super.deliverResult after storing the data
+            // DONE (3) Override deliverResult and store the data in mGithubJson
+            // DONE (4) Call super.deliverResult after storing the data
+
+            @Override
+            public void deliverResult(String data) {
+                Log.d(TAG, "deliverResult");
+                mGithubJson = data;
+                super.deliverResult(data);
+            }
         };
     }
 
     @Override
     public void onLoadFinished(Loader<String> loader, String data) {
+        Log.d(TAG, "onLoadFinished");
 
         /* When we finish loading, we want to hide the loading indicator from the user. */
         mLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -231,6 +252,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(Loader<String> loader) {
+        Log.d(TAG, "onLoaderReset");
+
         /*
          * We aren't using this method in our example application, but we are required to Override
          * it to implement the LoaderCallbacks<String> interface
