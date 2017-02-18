@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String ON_RESTART = "onRestart";
     private static final String ON_DESTROY = "onDestroy";
     private static final String ON_SAVE_INSTANCE_STATE = "onSaveInstanceState";
+    private static final String ON_RESTORE_INSTANCE_STATE = "onRestoreInstanceState";
 
     /*
      * This TextView will contain a running log of every lifecycle callback method called from this
@@ -31,6 +32,20 @@ public class MainActivity extends AppCompatActivity {
      * "Reset Log"
      */
     private TextView mLifecycleDisplay;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        logAndAppend(ON_SAVE_INSTANCE_STATE);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        logAndAppend(ON_RESTORE_INSTANCE_STATE);
+    }
 
     /**
      * Called when the activity is first created. This is where you should do all of your normal
@@ -41,26 +56,63 @@ public class MainActivity extends AppCompatActivity {
      * @param savedInstanceState The Activity's previously frozen state, if there was one.
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) { // Created
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mLifecycleDisplay = (TextView) findViewById(R.id.tv_lifecycle_events_display);
 
-        // TODO (1) Use logAndAppend within onCreate
+        // DONE (1) Use logAndAppend within onCreate
+        logAndAppend(ON_CREATE);
     }
 
-    // TODO (2) Override onStart, call super.onStart, and call logAndAppend with ON_START
+    // DONE (2) Override onStart, call super.onStart, and call logAndAppend with ON_START
+    @Override
+    protected void onStart() { // Visibile
+        super.onStart();
 
-    // TODO (3) Override onResume, call super.onResume, and call logAndAppend with ON_RESUME
+        logAndAppend(ON_START);
+    }
 
-    // TODO (4) Override onPause, call super.onPause, and call logAndAppend with ON_PAUSE
+    // DONE (3) Override onResume, call super.onResume, and call logAndAppend with ON_RESUME
+    @Override
+    protected void onResume() { // Active (has focus)
+        super.onStart();
 
-    // TODO (5) Override onStop, call super.onStop, and call logAndAppend with ON_STOP
+        logAndAppend(ON_RESUME);
+    }
 
-    // TODO (6) Override onRestart, call super.onRestart, and call logAndAppend with ON_RESTART
+    // DONE (4) Override onPause, call super.onPause, and call logAndAppend with ON_PAUSE
+    @Override
+    protected void onPause() { // No longer active, but still visible
+        super.onPause();
 
-    // TODO (7) Override onDestroy, call super.onDestroy, and call logAndAppend with ON_DESTROY
+        logAndAppend(ON_PAUSE);
+    }
+
+    // DONE (5) Override onStop, call super.onStop, and call logAndAppend with ON_STOP
+    @Override
+    protected void onStop() { // No longer visible, aka in background, some other activity is in the foreground
+        super.onStop();
+
+        logAndAppend(ON_STOP);
+    }
+
+    // DONE (6) Override onRestart, call super.onRestart, and call logAndAppend with ON_RESTART
+    @Override
+    protected void onRestart() { // Activity resumed from stopped state
+        super.onRestart();
+
+        logAndAppend(ON_RESTART);
+    }
+
+    // DONE (7) Override onDestroy, call super.onDestroy, and call logAndAppend with ON_DESTROY
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        logAndAppend(ON_DESTROY);
+    }
 
     /**
      * Logs to the console and appends the lifecycle method name to the TextView so that you can
